@@ -18,9 +18,6 @@
     <f:entry title="Default Room ID" help="${rootURL}/plugin/hipchat/help-globalConfig-room.html">
         <f:textbox name="hipchatRoom" value="${descriptor.getRoom()}" />
     </f:entry>
-    <f:entry title="Jenkins Url" help="${rootURL}/plugin/hipchat/help-globalConfig-hudsonUrl.html">
-        <f:textbox name="hipchatHudsonUrl" value="${descriptor.getHudsonUrl()}" />
-    </f:entry>
     <f:entry title="Notification Message Template" help="${rootURL}/plugin/hipchat/help-globalConfig-notificationTemplate.html">
         <f:textbox name="hipchatNotificationTemplate" value="${descriptor.getNotificationTemplate()}" default="${descriptor.defaultNotificationTemplate}" />
     </f:entry>

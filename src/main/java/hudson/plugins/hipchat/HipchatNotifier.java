@@ -50,9 +50,9 @@ public class HipchatNotifier extends BaseNotifier {
     }
 
     @DataBoundConstructor
-    public HipchatNotifier(String token, String room, String hudsonUrl, String notificationTemplate,
+    public HipchatNotifier(String token, String room, String notificationTemplate,
                            boolean smartNotify) {
-        super(hudsonUrl, notificationTemplate, smartNotify);
+        super(notificationTemplate, smartNotify);
 
         this.token = token;
         this.room = room;

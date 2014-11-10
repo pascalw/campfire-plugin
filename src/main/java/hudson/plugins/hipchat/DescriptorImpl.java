@@ -15,7 +15,6 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
     private boolean enabled = false;
     private String token;
     private String room;
-    private String hudsonUrl;
     private String notificationTemplate = DEFAULT_NOTIFICATION_TEMPLATE;
     private boolean smartNotify;
     private static final Logger LOGGER = Logger.getLogger(DescriptorImpl.class.getName());
@@ -39,10 +38,6 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
     public String getRoom() {
         return room;
-    }
-
-    public String getHudsonUrl() {
-        return hudsonUrl;
     }
 
     public String getNotificationTemplate() {
@@ -75,7 +70,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
             projectNotificationTemplate = notificationTemplate;
         }
         try {
-            return new HipchatNotifier(projectToken, projectRoom, hudsonUrl,
+            return new HipchatNotifier(projectToken, projectRoom,
                 projectNotificationTemplate, smartNotify);
         } catch (Exception e) {
             String message = "Failed to initialize hipchat notifier - check your hipchat notifier configuration settings: " + e.getMessage();
@@ -88,17 +83,13 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         token = req.getParameter("hipchatToken");
         room = req.getParameter("hipchatRoom");
-        hudsonUrl = req.getParameter("hipchatHudsonUrl");
-        if ( hudsonUrl != null && !hudsonUrl.endsWith("/") ) {
-            hudsonUrl = hudsonUrl + "/";
-        }
         notificationTemplate = req.getParameter("hipchatNotificationTemplate");
         if (notificationTemplate == null || notificationTemplate.trim().length() == 0) {
             notificationTemplate = DEFAULT_NOTIFICATION_TEMPLATE;
         }
         smartNotify = req.getParameter("hipchatSmartNotify") != null;
         try {
-            new HipchatNotifier(token, room, hudsonUrl, notificationTemplate, smartNotify);
+            new HipchatNotifier(token, room, notificationTemplate, smartNotify);
         } catch (Exception e) {
             String message = "Failed to initialize hipchat notifier - check your global hipchat notifier configuration settings: " + e.getMessage();
             LOGGER.log(Level.WARNING, message, e);

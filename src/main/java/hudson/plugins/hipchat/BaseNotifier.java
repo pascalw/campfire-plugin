@@ -7,6 +7,7 @@ import hudson.model.Result;
 import hudson.scm.ChangeLogSet;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.BufferedReader;
@@ -27,9 +28,9 @@ public abstract class BaseNotifier extends Notifier {
     private static final Logger LOGGER = Logger.getLogger(BaseNotifier.class.getName());
 
     @DataBoundConstructor
-    public BaseNotifier(String hudsonUrl, String notificationTemplate, boolean smartNotify) {
+    public BaseNotifier(String notificationTemplate, boolean smartNotify) {
         super();
-        this.hudsonUrl = hudsonUrl;
+        this.hudsonUrl = Jenkins.getInstance().getRootUrl();
         this.notificationTemplate = notificationTemplate;
         this.smartNotify = smartNotify;
     }
