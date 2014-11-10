@@ -1,10 +1,10 @@
-## Campfire notifier plugin for Jenkins
+## Hipchat notifier plugin for Jenkins
 
 This is a fork of the plugin developed by Jens Lukowski. More information about
 the original plugin is available from the [Hudson
-wiki](http://wiki.hudson-ci.org/display/HUDSON/Campfire+Plugin) and [this blog
+wiki](http://wiki.hudson-ci.org/display/HUDSON/Hipchat+Plugin) and [this blog
 post from
-Jens](http://schneide.wordpress.com/2009/10/26/a-campfire-plugin-for-hudson/).
+Jens](http://schneide.wordpress.com/2009/10/26/a-hipchat-plugin-for-hudson/).
 
 Development of the original plugin seemed to stall, so I forked it to address a
 number of issues and add some extra features...
@@ -14,11 +14,11 @@ number of issues and add some extra features...
 * Fixed issues with configuration details being lost after a restart.
 * Tidied up jelly view for configuration form and added help files for each
   field.
-* Added a link to the build in notifications sent to campfire.
+* Added a link to the build in notifications sent to hipchat.
 
 Other features have since been added including...
 
-* Support for campfire accounts with SSL enabled, added by Joshua Krall.
+* Support for hipchat accounts with SSL enabled, added by Joshua Krall.
 * A smart notification feature, added by Brad Greenlee, which disables
   success notifications unless the previous build was unsuccessful.
 * Play sounds on build success and failure, added by Henry Poydar.

@@ -1,4 +1,4 @@
-package hudson.plugins.campfire;
+package hudson.plugins.hipchat;
 
 import hudson.Extension;
 import hudson.ProxyConfiguration;
@@ -23,17 +23,9 @@ public class HipchatNotifier extends BaseNotifier {
 
     private static final Logger LOGGER = Logger.getLogger(HipchatNotifier.class.getName());
 
-    public String getConfiguredNotificationTemplate() {
-        if (DESCRIPTOR.getNotificationTemplate().equals(notificationTemplate)) {
-            return null;
-        } else {
-            return notificationTemplate;
-        }
-    }
-
     @DataBoundConstructor
-    public HipchatNotifier(String subdomain, String token, String room, String hudsonUrl, String notificationTemplate,
-                            boolean ssl, boolean smartNotify, boolean sound) {
+    public HipchatNotifier(String token, String room, String hudsonUrl, String notificationTemplate,
+                           boolean smartNotify) {
         super(hudsonUrl, notificationTemplate, smartNotify);
 
         this.token = token;

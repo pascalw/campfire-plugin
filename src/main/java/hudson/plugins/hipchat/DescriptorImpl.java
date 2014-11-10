@@ -1,4 +1,4 @@
-package hudson.plugins.campfire;
+package hudson.plugins.hipchat;
 
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
@@ -13,14 +13,11 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
     private static final String DEFAULT_NOTIFICATION_TEMPLATE = "%PROJECT_NAME% %BUILD_DISPLAY_NAME% (%CHANGES%): %SMART_RESULT% (%BUILD_URL%)";
 
     private boolean enabled = false;
-    private String subdomain;
     private String token;
     private String room;
     private String hudsonUrl;
     private String notificationTemplate = DEFAULT_NOTIFICATION_TEMPLATE;
-    private boolean ssl;
     private boolean smartNotify;
-    private boolean sound;
     private static final Logger LOGGER = Logger.getLogger(DescriptorImpl.class.getName());
 
     public DescriptorImpl() {
@@ -34,10 +31,6 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public String getSubdomain() {
-        return subdomain;
     }
 
     public String getToken() {
@@ -56,16 +49,8 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         return notificationTemplate;
     }
 
-    public boolean getSsl() {
-        return ssl;
-    }
-
     public boolean getSmartNotify() {
         return smartNotify;
-    }
-
-    public boolean getSound() {
-        return sound;
     }
 
     public boolean isApplicable(Class<? extends AbstractProject> aClass) {
@@ -77,27 +62,23 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
      */
     @Override
     public Publisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-        String projectSubdomain = req.getParameter("campfireSubdomain");
-        String projectToken = req.getParameter("campfireToken");
-        String projectRoom = req.getParameter("campfireRoom");
-        String projectNotificationTemplate = req.getParameter("campfireNotificationTemplate");
+        String projectToken = req.getParameter("hipchatToken");
+        String projectRoom = req.getParameter("hipchatRoom");
+        String projectNotificationTemplate = req.getParameter("hipchatNotificationTemplate");
         if ( projectRoom == null || projectRoom.trim().length() == 0 ) {
             projectRoom = room;
         }
         if ( projectToken == null || projectToken.trim().length() == 0 ) {
             projectToken = token;
         }
-        if ( projectSubdomain == null || projectSubdomain.trim().length() == 0 ) {
-            projectSubdomain = subdomain;
-        }
         if ( projectNotificationTemplate == null || projectNotificationTemplate.trim().length() == 0 ) {
             projectNotificationTemplate = notificationTemplate;
         }
         try {
-            return new HipchatNotifier(projectSubdomain, projectToken, projectRoom, hudsonUrl,
-                projectNotificationTemplate, ssl, smartNotify, sound);
+            return new HipchatNotifier(projectToken, projectRoom, hudsonUrl,
+                projectNotificationTemplate, smartNotify);
         } catch (Exception e) {
-            String message = "Failed to initialize campfire notifier - check your campfire notifier configuration settings: " + e.getMessage();
+            String message = "Failed to initialize hipchat notifier - check your hipchat notifier configuration settings: " + e.getMessage();
             LOGGER.log(Level.WARNING, message, e);
             throw new FormException(message, e, "");
         }
@@ -105,24 +86,21 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-        subdomain = req.getParameter("campfireSubdomain");
-        token = req.getParameter("campfireToken");
-        room = req.getParameter("campfireRoom");
-        hudsonUrl = req.getParameter("campfireHudsonUrl");
+        token = req.getParameter("hipchatToken");
+        room = req.getParameter("hipchatRoom");
+        hudsonUrl = req.getParameter("hipchatHudsonUrl");
         if ( hudsonUrl != null && !hudsonUrl.endsWith("/") ) {
             hudsonUrl = hudsonUrl + "/";
         }
-        notificationTemplate = req.getParameter("campfireNotificationTemplate");
+        notificationTemplate = req.getParameter("hipchatNotificationTemplate");
         if (notificationTemplate == null || notificationTemplate.trim().length() == 0) {
             notificationTemplate = DEFAULT_NOTIFICATION_TEMPLATE;
         }
-        ssl = req.getParameter("campfireSsl") != null;
-        smartNotify = req.getParameter("campfireSmartNotify") != null;
-        sound = req.getParameter("campfireSound") != null;
+        smartNotify = req.getParameter("hipchatSmartNotify") != null;
         try {
-            new HipchatNotifier(subdomain, token, room, hudsonUrl, notificationTemplate, ssl, smartNotify, sound);
+            new HipchatNotifier(token, room, hudsonUrl, notificationTemplate, smartNotify);
         } catch (Exception e) {
-            String message = "Failed to initialize campfire notifier - check your global campfire notifier configuration settings: " + e.getMessage();
+            String message = "Failed to initialize hipchat notifier - check your global hipchat notifier configuration settings: " + e.getMessage();
             LOGGER.log(Level.WARNING, message, e);
             throw new FormException(message, e, "");
         }
@@ -143,6 +121,6 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
      */
     @Override
     public String getHelpFile() {
-        return "/plugin/campfire/help.html";
+        return "/plugin/hipchat/help.html";
     }
 }
