@@ -23,6 +23,32 @@ public class HipchatNotifier extends BaseNotifier {
 
     private static final Logger LOGGER = Logger.getLogger(HipchatNotifier.class.getName());
 
+    // getters for project configuration..
+    // Configured room name / subdomain / token should be null unless different from descriptor/global values
+    public String getConfiguredRoom() {
+        if ( DESCRIPTOR.getRoom().equals(room) ) {
+            return null;
+        } else {
+            return room;
+        }
+    }
+
+    public String getConfiguredToken() {
+        if ( DESCRIPTOR.getToken().equals(token) ) {
+            return null;
+        } else {
+            return token;
+        }
+    }
+
+    public String getConfiguredNotificationTemplate() {
+        if ( DESCRIPTOR.getNotificationTemplate().equals(notificationTemplate) ) {
+            return null;
+        } else {
+            return notificationTemplate;
+        }
+    }
+
     @DataBoundConstructor
     public HipchatNotifier(String token, String room, String hudsonUrl, String notificationTemplate,
                            boolean smartNotify) {

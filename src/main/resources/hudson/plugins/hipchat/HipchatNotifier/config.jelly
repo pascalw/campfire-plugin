@@ -7,7 +7,7 @@
       <f:textbox name="hipchatToken" value="${instance.getConfiguredToken()}"/>
     </f:entry>
     <f:entry title="Project Room ID" description="Optional. Use to send notifications to a room other than the default (${descriptor.getRoom()})" help="${rootURL}/plugin/hipchat/help-projectConfig-room.html">
-      <f:textbox name="hipchatRoom" value="${instance.getConfiguredRoomName()}"/>
+      <f:textbox name="hipchatRoom" value="${instance.getConfiguredRoom()}"/>
     </f:entry>
     <f:entry title="Project Notification Message Template" description="Optional. Override the message sent to the HipChat room other than the default (${descriptor.getNotificationTemplate()})."
       help="${rootURL}/plugin/hipchat/help-projectConfig-notificationTemplate.html">
