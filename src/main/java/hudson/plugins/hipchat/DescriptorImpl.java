@@ -104,7 +104,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
      */
     @Override
     public String getDisplayName() {
-        return "Campfire Notification";
+        return "HipChat Notification";
     }
 
     /**
