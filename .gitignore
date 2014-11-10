@@ -2,3 +2,6 @@
 *.swp
 .project
 target
+work
+.idea/
+*.iml

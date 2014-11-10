@@ -24,7 +24,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
     private static final Logger LOGGER = Logger.getLogger(DescriptorImpl.class.getName());
 
     public DescriptorImpl() {
-        super(CampfireNotifier.class);
+        super(HipchatNotifier.class);
         load();
     }
 
@@ -94,7 +94,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
             projectNotificationTemplate = notificationTemplate;
         }
         try {
-            return new CampfireNotifier(projectSubdomain, projectToken, projectRoom, hudsonUrl,
+            return new HipchatNotifier(projectSubdomain, projectToken, projectRoom, hudsonUrl,
                 projectNotificationTemplate, ssl, smartNotify, sound);
         } catch (Exception e) {
             String message = "Failed to initialize campfire notifier - check your campfire notifier configuration settings: " + e.getMessage();
@@ -120,7 +120,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         smartNotify = req.getParameter("campfireSmartNotify") != null;
         sound = req.getParameter("campfireSound") != null;
         try {
-            new CampfireNotifier(subdomain, token, room, hudsonUrl, notificationTemplate, ssl, smartNotify, sound);
+            new HipchatNotifier(subdomain, token, room, hudsonUrl, notificationTemplate, ssl, smartNotify, sound);
         } catch (Exception e) {
             String message = "Failed to initialize campfire notifier - check your global campfire notifier configuration settings: " + e.getMessage();
             LOGGER.log(Level.WARNING, message, e);
