@@ -1,0 +1,20 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This jelly script is used for per-project configuration.
+    See global.jelly for a general discussion about jelly script.
+  -->
+    <f:entry title="Slack Team domain" description="Slack Team domain, other than the default (${descriptor.getTeamDomain()})" help="${rootURL}/plugin/slack/help-projectConfig-teamDomain.html">
+        <f:textbox name="teamDomain" value="${instance.getTeamDomain()}"/>
+    </f:entry>
+    <f:entry title="Project API Token" description="Optional. Use to send notifications to an API token other than the default (${descriptor.getToken()})" help="${rootURL}/plugin/slack/help-projectConfig-token.html">
+      <f:textbox name="slackToken" value="${instance.getConfiguredToken()}"/>
+    </f:entry>
+    <f:entry title="Project Room ID" description="Optional. Use to send notifications to a room other than the default (${descriptor.getRoom()})" help="${rootURL}/plugin/slack/help-projectConfig-room.html">
+      <f:textbox name="slackRoom" value="${instance.getConfiguredRoom()}"/>
+    </f:entry>
+    <f:entry title="Project Notification Message Template" description="Optional. Override the message sent to the Slack room other than the default (${descriptor.getNotificationTemplate()})."
+      help="${rootURL}/plugin/slack/help-projectConfig-notificationTemplate.html">
+      <f:textbox name="slackNotificationTemplate" value="${instance.getConfiguredNotificationTemplate()}" />
+    </f:entry>
+
+</j:jelly>

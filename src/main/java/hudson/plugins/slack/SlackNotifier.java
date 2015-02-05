@@ -1,27 +1,32 @@
-package hudson.plugins.hipchat;
+package hudson.plugins.slack;
 
 import hudson.Extension;
 import hudson.ProxyConfiguration;
 import hudson.model.AbstractBuild;
 import hudson.model.Hudson;
 import hudson.model.Result;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class HipchatNotifier extends BaseNotifier {
+public class SlackNotifier extends BaseNotifier {
 
     private String token;
     private String room;
+    private String teamDomain;
 
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
-    private static final Logger LOGGER = Logger.getLogger(HipchatNotifier.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SlackNotifier.class.getName());
 
     // getters for project configuration..
     // Configured room name / subdomain / token should be null unless different from descriptor/global values
@@ -50,10 +55,11 @@ public class HipchatNotifier extends BaseNotifier {
     }
 
     @DataBoundConstructor
-    public HipchatNotifier(String token, String room, String notificationTemplate,
-                           boolean smartNotify) {
+    public SlackNotifier(String teamDomain, String token, String room, String notificationTemplate,
+                         boolean smartNotify) {
         super(notificationTemplate, smartNotify);
 
+        this.teamDomain = teamDomain;
         this.token = token;
         this.room = room;
     }
@@ -72,24 +78,43 @@ public class HipchatNotifier extends BaseNotifier {
 
     @Override
     protected void publishMessage(AbstractBuild<?, ?> build, String message) throws IOException {
-        PostMethod post = new PostMethod("https://api.hipchat.com/v2/room/" + this.room + "/notification");
-        post.setRequestHeader("Authorization", "Bearer " + token);
-        post.setRequestHeader("Content-Type", "application/json");
+        String url = "https://" + teamDomain + ".slack.com/services/hooks/jenkins-ci?token=" + token;
+        String color = build.getResult() == Result.SUCCESS ? "good" : "danger";
 
-        String color = build.getResult() == Result.SUCCESS ? "green" : "red";
+        PostMethod post = new PostMethod(url);
+        JSONObject json = new JSONObject();
 
-        String body = String.format("{\n" +
-            "  \"color\": \"%s\",\n" +
-            "  \"message_format\": \"text\",\n" +
-            "  \"message\": \"%s\",\n" +
-            "  \"notify\": true\n" +
-            "}", color, message);
+        try {
+            JSONObject field = new JSONObject();
+            field.put("short", false);
+            field.put("value", message);
 
-        LOGGER.info("Sending to hipchat: " + body);
-        post.setRequestEntity(new StringRequestEntity(body, "application/xml", "UTF8"));
+            JSONArray fields = new JSONArray();
+            fields.add(field);
 
-        int response = createHttpClient().executeMethod(post);
-        LOGGER.info("Got " + response + " from Hipchat API");
+            JSONObject attachment = new JSONObject();
+            attachment.put("fallback", message);
+            attachment.put("color", color);
+            attachment.put("fields", fields);
+            JSONArray attachments = new JSONArray();
+            attachments.add(attachment);
+
+            json.put("channel", this.room);
+            json.put("attachments", attachments);
+
+            post.addParameter("payload", json.toString());
+            post.getParams().setContentCharset("UTF-8");
+            int responseCode = createHttpClient().executeMethod(post);
+            String response = post.getResponseBodyAsString();
+            if(responseCode != HttpStatus.SC_OK) {
+                LOGGER.log(Level.WARNING, "Slack post may have failed. Response: " + response);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error posting to Slack", e);
+        } finally {
+            LOGGER.info("Posting succeeded");
+            post.releaseConnection();
+        }
     }
 
     @Override

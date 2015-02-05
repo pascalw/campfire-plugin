@@ -1,4 +1,4 @@
-package hudson.plugins.hipchat;
+package hudson.plugins.slack;
 
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
@@ -13,6 +13,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
     private static final String DEFAULT_NOTIFICATION_TEMPLATE = "%PROJECT_NAME% %BUILD_DISPLAY_NAME% (%CHANGES%): %SMART_RESULT% (%BUILD_URL%)";
 
     private boolean enabled = false;
+    private String teamDomain;
     private String token;
     private String room;
     private String notificationTemplate = DEFAULT_NOTIFICATION_TEMPLATE;
@@ -20,7 +21,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
     private static final Logger LOGGER = Logger.getLogger(DescriptorImpl.class.getName());
 
     public DescriptorImpl() {
-        super(HipchatNotifier.class);
+        super(SlackNotifier.class);
         load();
     }
 
@@ -48,6 +49,10 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         return smartNotify;
     }
 
+    public String getTeamDomain() {
+        return teamDomain;
+    }
+
     public boolean isApplicable(Class<? extends AbstractProject> aClass) {
         return true;
     }
@@ -57,23 +62,29 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
      */
     @Override
     public Publisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-        String projectToken = req.getParameter("hipchatToken");
-        String projectRoom = req.getParameter("hipchatRoom");
-        String projectNotificationTemplate = req.getParameter("hipchatNotificationTemplate");
+        String projectToken = req.getParameter("slackToken");
+        String projectRoom = req.getParameter("slackRoom");
+        String projectNotificationTemplate = req.getParameter("slackNotificationTemplate");
+        String projectTeamDomain = req.getParameter("teamDomain");
+
         if ( projectRoom == null || projectRoom.trim().length() == 0 ) {
             projectRoom = room;
         }
         if ( projectToken == null || projectToken.trim().length() == 0 ) {
             projectToken = token;
         }
+        if ( projectTeamDomain == null || projectTeamDomain.trim().length() == 0 ) {
+            projectTeamDomain = teamDomain;
+        }
+
         if ( projectNotificationTemplate == null || projectNotificationTemplate.trim().length() == 0 ) {
             projectNotificationTemplate = notificationTemplate;
         }
         try {
-            return new HipchatNotifier(projectToken, projectRoom,
+            return new SlackNotifier(projectTeamDomain, projectToken, projectRoom,
                 projectNotificationTemplate, smartNotify);
         } catch (Exception e) {
-            String message = "Failed to initialize hipchat notifier - check your hipchat notifier configuration settings: " + e.getMessage();
+            String message = "Failed to initialize Slack notifier - check your Slack notifier configuration settings: " + e.getMessage();
             LOGGER.log(Level.WARNING, message, e);
             throw new FormException(message, e, "");
         }
@@ -81,17 +92,18 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-        token = req.getParameter("hipchatToken");
-        room = req.getParameter("hipchatRoom");
-        notificationTemplate = req.getParameter("hipchatNotificationTemplate");
+        token = req.getParameter("slackToken");
+        room = req.getParameter("slackRoom");
+        notificationTemplate = req.getParameter("slackNotificationTemplate");
         if (notificationTemplate == null || notificationTemplate.trim().length() == 0) {
             notificationTemplate = DEFAULT_NOTIFICATION_TEMPLATE;
         }
-        smartNotify = req.getParameter("hipchatSmartNotify") != null;
+        smartNotify = req.getParameter("slackSmartNotify") != null;
+        teamDomain = req.getParameter("teamDomain");
         try {
-            new HipchatNotifier(token, room, notificationTemplate, smartNotify);
+            new SlackNotifier(teamDomain, token, room, notificationTemplate, smartNotify);
         } catch (Exception e) {
-            String message = "Failed to initialize hipchat notifier - check your global hipchat notifier configuration settings: " + e.getMessage();
+            String message = "Failed to initialize Slack notifier - check your global Slack notifier configuration settings: " + e.getMessage();
             LOGGER.log(Level.WARNING, message, e);
             throw new FormException(message, e, "");
         }
@@ -104,7 +116,7 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
      */
     @Override
     public String getDisplayName() {
-        return "HipChat Notification";
+        return "Slack Notification";
     }
 
     /**
@@ -112,6 +124,6 @@ public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
      */
     @Override
     public String getHelpFile() {
-        return "/plugin/hipchat/help.html";
+        return "/plugin/slack/help.html";
     }
 }

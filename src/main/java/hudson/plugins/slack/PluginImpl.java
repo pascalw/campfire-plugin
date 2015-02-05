@@ -1,4 +1,4 @@
-package hudson.plugins.hipchat;
+package hudson.plugins.slack;
 
 import hudson.Plugin;
 
