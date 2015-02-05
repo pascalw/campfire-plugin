@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-    private static final String DEFAULT_NOTIFICATION_TEMPLATE = "%PROJECT_NAME% %BUILD_DISPLAY_NAME% (%CHANGES%): %SMART_RESULT% (%BUILD_URL%)";
+    private static final String DEFAULT_NOTIFICATION_TEMPLATE = "<%BUILD_URL%|%PROJECT_NAME% %BUILD_DISPLAY_NAME%> (%CHANGES%): %SMART_RESULT%";
 
     private boolean enabled = false;
     private String teamDomain;
